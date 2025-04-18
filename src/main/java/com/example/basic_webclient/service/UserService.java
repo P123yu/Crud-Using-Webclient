@@ -1,6 +1,7 @@
 package com.example.basic_webclient.service;
 
 import com.example.basic_webclient.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Service
 public interface UserService {
-    User getUserById(String userId);
+    User getUserById(String userId) throws JsonProcessingException;
 
 
     List<User> getUsers();

@@ -3,6 +3,7 @@ package com.example.basic_webclient.service.impl;
 import com.example.basic_webclient.client.UserClient;
 import com.example.basic_webclient.model.User;
 import com.example.basic_webclient.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User getUserById(String userId) {
+    public User getUserById(String userId) throws JsonProcessingException {
         return userClient.getPost(userId);
     }
 

@@ -2,8 +2,10 @@ package com.example.basic_webclient.controller;
 
 import com.example.basic_webclient.model.User;
 import com.example.basic_webclient.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+
+
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> fetchPostById(@PathVariable String id){
+    public ResponseEntity<?> fetchPostById(@PathVariable String id) throws JsonProcessingException {
         User user=userService.getUserById(id);
         return user!=null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }

@@ -1,12 +1,14 @@
 package com.example.basic_webclient.client;
 
 import com.example.basic_webclient.model.User;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -16,14 +18,34 @@ public class UserClient {
     @Qualifier("jsonPlaceholderWebClient")
     private WebClient webClient;
 
-    public User getPost(String userId) {
-        return webClient.get()
-                .uri("/crud/"+userId)
-                .retrieve()
-                .bodyToMono(User.class)
-                .block(); // For simplicity; avoid block() in reactive apps
+    @Autowired
+    private KafkaTemplate<Object, String> kafkaTemplate;
+
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    // ✅ Method to send message to Kafka topic
+    public void sendToTopic1(User user) throws JsonProcessingException {
+        String json = objectMapper.writeValueAsString(user);
+        kafkaTemplate.send("firstTopic15", json);
     }
 
+
+    public User getPost(String userId) throws JsonProcessingException {
+        User user = webClient.get()
+                .uri("/crud/" + userId)
+                .retrieve()
+                .bodyToMono(User.class)
+                .block(); // Note: blocking in reactive is not ideal, but OK for simple use cases
+
+        // ✅ Send user info (as string) to Kafka topic
+        if (user != null) {
+            sendToTopic1(user); // or convert to JSON using ObjectMapper
+        }
+
+        return user;
+    }
 
     public List<User> getPostList() {
         return webClient.get()
@@ -73,16 +95,5 @@ public class UserClient {
                 .bodyToMono(User.class)
                 .block(); // Blocking for simplicity
     }
-
-
-
-
-
-
-
-
-
-
-
 
 }
